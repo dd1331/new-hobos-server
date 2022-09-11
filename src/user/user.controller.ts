@@ -15,7 +15,7 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('signup/local')
   create(@Body() createUserDto: SignupLocalDTO) {
     return this.userService.signupLocal(createUserDto);
   }

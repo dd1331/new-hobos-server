@@ -26,6 +26,7 @@ describe('User', () => {
   });
   it('이메일 유효성', () => {});
   it('비밀번호 유효성', () => {});
+  it('이메일 중복', () => {});
 
   afterAll(async () => {
     await app.close();

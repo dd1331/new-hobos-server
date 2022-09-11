@@ -12,7 +12,12 @@ export class UserService {
     const hasedPassword = await this.hashPassword(dto.password);
 
     this.checkDuplication(dto);
-    return this.userRepo.insert({ ...dto, password: hasedPassword });
+    const created = await this.userRepo.insert({
+      ...dto,
+      password: hasedPassword,
+    });
+    const [identifier] = created.identifiers;
+    return identifier.id;
   }
 
   private async hashPassword(password: string) {
@@ -20,8 +25,8 @@ export class UserService {
     return bcrypt.hash(password, saltOrRounds);
   }
 
-  private checkDuplication({ email }: SignupDTO) {
-    const emailDuplicated = this.userRepo.findOneBy({ email });
+  private async checkDuplication({ email }: SignupDTO) {
+    const emailDuplicated = await this.userRepo.findOneBy({ email });
     if (emailDuplicated) throw new ConflictException('이메일 중복');
   }
 
