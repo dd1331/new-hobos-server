@@ -1,4 +1,6 @@
+import { User } from '../../user/entities/user.entity';
+
 export class LoginResDto {
-  accessToken: string;
-  refreshToken: string;
+  tokens: { accessToken: string; refreshToken: string };
+  user: User;
 }

@@ -1,47 +1,62 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { AppModule } from '../app.module';
-import { AuthService } from '../auth/auth.service';
+import { dataSourceOptions } from '../../data-source';
+import { HttpExceptionFilter } from '../http-exception.filter';
 import { SignupLocalDTO } from '../user/dto/signup-local.dto';
-import { UserService } from '../user/user.service';
+import { UserModule } from '../user/user.module';
+import { AuthModule } from './auth.module';
+import { LoginLocalDto } from './dto/login-local.dto';
+import { LoginResDto } from './dto/login-res.dto';
 
 describe('Auth', () => {
   let app: INestApplication;
-  const authService = { findAll: () => ['test'] };
-  let userService: UserService;
-  let userId;
-  const signupLocalDTO: SignupLocalDTO = {
-    email: 'test',
-    password: 'fadsfadfsddsf',
-  };
+  let req: request.SuperTest<request.Test>;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        AuthModule,
+        UserModule,
+        TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+      ],
     })
-      .overrideProvider(AuthService)
-      .useValue(authService)
+      .overrideFilter(HttpExceptionFilter)
+      .useClass(HttpExceptionFilter)
       .compile();
 
     app = moduleRef.createNestApplication();
-    userService = app.get<UserService>(UserService);
     await app.init();
-    userId = await userService.signupLocal(signupLocalDTO);
+
+    req = request(app.getHttpServer());
   });
 
-  it(`/GET Auth`, () => {
-    // return request(app.getHttpServer()).get('/auth').expect(200).expect({
-    //   data: authService.findAll(),
-    // });
-  });
-  it.skip('login', () => {
-    return request(app.getHttpServer())
-      .post('/auth/login/local')
-      .expect(200)
-      .expect({
-        // data: authService.findAll(),
-      });
+  describe('auth', () => {
+    let accessToken;
+    const dto: SignupLocalDTO = { email: 'test@test.com', password: '1234' };
+    beforeAll(async () => {
+      const { body } = await req
+        .post('/user/signup/local')
+        .send(dto)
+        .expect(HttpStatus.CREATED);
+      const { user, tokens }: LoginResDto = body;
+      accessToken = tokens.accessToken;
+    });
+    it('로그인 성공', async () => {
+      expect.assertions(3);
+
+      const loginDto: LoginLocalDto = { ...dto };
+      const { body } = await req
+        .post('/auth/login/local')
+        .send(loginDto)
+        .set({ Authorization: 'Bearer ' + accessToken })
+        .expect(HttpStatus.OK);
+      const { tokens, user }: LoginResDto = body;
+      expect(user.email).toBe(dto.email);
+      expect(tokens.accessToken).toBe(accessToken);
+      expect(tokens.refreshToken).toBeTruthy();
+    });
   });
 
   afterAll(async () => {

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { UserRepository } from '../user/user.repository';
+import { JWT } from './auth.constant';
 import { LoginLocalDto } from './dto/login-local.dto';
 import { LoginResDto } from './dto/login-res.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
@@ -10,7 +11,7 @@ import { UpdateAuthDto } from './dto/update-auth.dto';
 export class AuthService {
   constructor(
     private readonly userRepo: UserRepository,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userRepo.findOneBy({ email });
@@ -27,17 +28,24 @@ export class AuthService {
 
     this.comparePasswordOrFail(password);
 
-    const { accessToken, refreshToken } = this.generateTokens(user);
-    user.login(refreshToken);
+    const tokens = this.generateTokens(user);
+    user.login(tokens.refreshToken);
     await this.userRepo.save(user);
 
-    return { accessToken: 'fadfds', refreshToken: 'fdsa' };
+    return { tokens, user };
   }
 
   private generateTokens({ email, id }: User) {
     const payload = { email, id };
-    const res = this.jwtService.sign(payload);
-    return { accessToken: 'fadfds', refreshToken: 'fdsa' };
+    const accessToken = this.jwtService.sign(payload, {
+      secret: JWT.SECRET,
+      expiresIn: '1d',
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: JWT.SECRET + 2,
+      expiresIn: '1d',
+    });
+    return { accessToken, refreshToken };
   }
 
   private comparePasswordOrFail(password: string) {}

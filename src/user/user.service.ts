@@ -1,5 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { AuthService } from '../auth/auth.service';
+import { LoginResDto } from '../auth/dto/login-res.dto';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { SignupDTO } from './dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -7,17 +9,17 @@ import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepo: UserRepository) {}
-  async signupLocal(dto: SignupLocalDTO) {
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly authService: AuthService,
+  ) {}
+  async signupLocal(dto: SignupLocalDTO): Promise<LoginResDto> {
     const hasedPassword = await this.hashPassword(dto.password);
+    const password = hasedPassword;
 
     this.checkDuplication(dto);
-    const created = await this.userRepo.insert({
-      ...dto,
-      password: hasedPassword,
-    });
-    const [identifier] = created.identifiers;
-    return identifier.id;
+    await this.userRepo.insert({ ...dto, password });
+    return this.authService.loginLocal({ password, email: dto.email });
   }
 
   private async hashPassword(password: string) {

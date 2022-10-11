@@ -12,10 +12,11 @@ import { LocalStrategy } from './local.strategy';
     PassportModule,
     JwtModule.register({
       secret: JWT.SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, UserRepository, JwtService],
+  exports: [AuthService],
 })
 export class AuthModule {}
