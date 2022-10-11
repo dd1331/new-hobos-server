@@ -2,25 +2,35 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
+import { EntityManager } from 'typeorm';
 import { dataSourceOptions } from '../../data-source';
 import { LoginLocalDto } from '../auth/dto/login-local.dto';
 import { LoginResDto } from '../auth/dto/login-res.dto';
+import { Category } from '../category/entities/category.entity';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { SignupLocalDTO } from '../user/dto/signup-local.dto';
 import { UserModule } from '../user/user.module';
 import { CreatePostDto } from './dto/create-post.dto';
+import { PostCategory } from './entities/post-category.entity';
 import { PostModule } from './post.module';
 
 describe('Post', () => {
   let app: INestApplication;
   let req: request.SuperTest<request.Test>;
+  let manager: EntityManager;
+  let category: Category;
+  let postCategory: PostCategory;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
         PostModule,
         UserModule,
-        TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+        TypeOrmModule.forRoot({
+          ...dataSourceOptions,
+          autoLoadEntities: true,
+          entities: [Category],
+        }),
       ],
     })
       .overrideFilter(HttpExceptionFilter)
@@ -29,6 +39,10 @@ describe('Post', () => {
 
     app = moduleRef.createNestApplication();
     await app.init();
+
+    manager = app.get<EntityManager>(EntityManager);
+
+    category = await manager.save(Category, { title: 'test title' });
 
     req = request(app.getHttpServer());
   });
@@ -45,8 +59,7 @@ describe('Post', () => {
       const postDTO: CreatePostDto = {
         title: 'test title',
         content: 'test content',
-        // FIXME: use realone
-        category: 1,
+        categoryId: category.id,
       };
       const { body } = await req
         .post('/post')

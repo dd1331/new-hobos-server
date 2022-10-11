@@ -10,10 +10,7 @@ export class Post extends Common {
   @Column()
   content: string;
 
-  @Column()
-  category: number;
-
-  @Column()
+  @Column({ name: 'user_id' })
   userId: number;
 
   @ManyToOne(() => User)
