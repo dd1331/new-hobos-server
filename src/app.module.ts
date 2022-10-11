@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from '../data-source';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -11,22 +12,13 @@ import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
     UserModule,
     AuthModule,
     PostModule,
     CommentModule,
     LikeModule,
     CategoryModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: '127.0.0.1',
-      port: 3306,
-      username: 'charlie',
-      password: '1331',
-      database: 'hobos',
-      autoLoadEntities: true,
-      synchronize: true,
-    }),
   ],
   controllers: [AppController],
   providers: [AppService],
