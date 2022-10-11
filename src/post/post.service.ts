@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostRepository } from './post.repository';
 
 @Injectable()
 export class PostService {
-  create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+  constructor(private readonly postRepo: PostRepository) {}
+  async post(dto: CreatePostDto) {
+    const post = this.postRepo.create(dto);
+    await this.postRepo.save(post);
+    return post;
   }
 
   findAll() {

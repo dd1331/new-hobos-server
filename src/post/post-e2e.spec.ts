@@ -3,21 +3,22 @@ import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
 import { dataSourceOptions } from '../../data-source';
+import { LoginLocalDto } from '../auth/dto/login-local.dto';
+import { LoginResDto } from '../auth/dto/login-res.dto';
 import { HttpExceptionFilter } from '../http-exception.filter';
 import { SignupLocalDTO } from '../user/dto/signup-local.dto';
 import { UserModule } from '../user/user.module';
-import { AuthModule } from './auth.module';
-import { LoginLocalDto } from './dto/login-local.dto';
-import { LoginResDto } from './dto/login-res.dto';
+import { CreatePostDto } from './dto/create-post.dto';
+import { PostModule } from './post.module';
 
-describe('Auth', () => {
+describe('Post', () => {
   let app: INestApplication;
   let req: request.SuperTest<request.Test>;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
-        AuthModule,
+        PostModule,
         UserModule,
         TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
       ],
@@ -32,25 +33,28 @@ describe('Auth', () => {
     req = request(app.getHttpServer());
   });
 
-  describe('auth', () => {
+  describe('post', () => {
     let accessToken;
     const dto: SignupLocalDTO = { email: 'test@test.com', password: '1234' };
     beforeAll(async () => {
       const { user, tokens }: LoginResDto = await signupLocal(req, dto);
       accessToken = tokens.accessToken;
     });
-    it('로그인 성공', async () => {
-      expect.assertions(3);
-
-      const loginDto: LoginLocalDto = { ...dto };
-      const { tokens, user }: LoginResDto = await loginLocal(
-        req,
-        loginDto,
-        accessToken,
-      );
-      expect(user.email).toBe(dto.email);
-      expect(tokens.accessToken).toBe(accessToken);
-      expect(tokens.refreshToken).toBeTruthy();
+    it('포스트 성공', async () => {
+      expect.assertions(1);
+      const postDTO: CreatePostDto = {
+        title: 'test title',
+        content: 'test content',
+        // FIXME: use realone
+        category: 1,
+      };
+      const { body } = await req
+        .post('/post')
+        .set({ Authorization: 'Bearer ' + accessToken })
+        .send(postDTO)
+        .expect(HttpStatus.CREATED);
+      console.log('🚀 ~ file: post-e2e.spec.ts ~ line 54 ~ it ~ body', body);
+      expect(body.id).toBeTruthy();
     });
   });
 
@@ -58,6 +62,7 @@ describe('Auth', () => {
     await app.close();
   });
 });
+
 // FIXME: duplicated
 async function signupLocal(
   req: request.SuperTest<request.Test>,
@@ -76,8 +81,7 @@ async function loginLocal(
   accessToken: any,
 ): Promise<LoginResDto> {
   const { body } = await req
-
-    .post('/auth/login/local')
+    .post('/post/login/local')
     .send(loginDto)
     .set({ Authorization: 'Bearer ' + accessToken })
     .expect(HttpStatus.OK);
