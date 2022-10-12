@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
@@ -38,6 +38,11 @@ describe('Post', () => {
       .compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+      }),
+    );
     await app.init();
 
     manager = app.get<EntityManager>(EntityManager);
@@ -46,9 +51,12 @@ describe('Post', () => {
 
     req = request(app.getHttpServer());
   });
+  afterAll(async () => {
+    await app.close();
+  });
 
   describe('post', () => {
-    let accessToken;
+    let accessToken: string;
     const dto: SignupLocalDTO = { email: 'test@test.com', password: '1234' };
     beforeAll(async () => {
       const { user, tokens }: LoginResDto = await signupLocal(req, dto);
@@ -66,13 +74,28 @@ describe('Post', () => {
         .set({ Authorization: 'Bearer ' + accessToken })
         .send(postDTO)
         .expect(HttpStatus.CREATED);
-      console.log('🚀 ~ file: post-e2e.spec.ts ~ line 54 ~ it ~ body', body);
       expect(body.id).toBeTruthy();
     });
-  });
-
-  afterAll(async () => {
-    await app.close();
+    it.only('게시글 조회 성공', async () => {
+      // TODO: pagin test
+      expect.assertions(3);
+      const postDTO: CreatePostDto = {
+        title: 'test title',
+        content: 'test content',
+        categoryId: category.id,
+      };
+      await post(req, accessToken, postDTO);
+      await post(req, accessToken, postDTO);
+      const size = 2;
+      const { body } = await req
+        .get('/post/' + category.id)
+        .query({ page: 1, size })
+        .expect(HttpStatus.OK);
+      const [posted] = body;
+      expect(body.length).toBe(size);
+      expect(posted.post.title).toBe(postDTO.title);
+      expect(posted.post.content).toBe(postDTO.content);
+    });
   });
 });
 
@@ -99,4 +122,15 @@ async function loginLocal(
     .set({ Authorization: 'Bearer ' + accessToken })
     .expect(HttpStatus.OK);
   return body;
+}
+async function post(
+  req: request.SuperTest<request.Test>,
+  accessToken: string,
+  postDTO: CreatePostDto,
+) {
+  await req
+    .post('/post')
+    .set({ Authorization: 'Bearer ' + accessToken })
+    .send(postDTO)
+    .expect(HttpStatus.CREATED);
 }

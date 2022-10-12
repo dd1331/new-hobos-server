@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
+import { PagingDTO } from '../common/paging.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostCategory } from './entities/post-category.entity';
@@ -29,8 +30,8 @@ export class PostService {
     });
   }
 
-  findAll() {
-    return `This action returns all post`;
+  getList(categoryId: number, dto: PagingDTO) {
+    return this.postRepo.getList(this.dataSource.manager, categoryId, dto);
   }
 
   findOne(id: number) {

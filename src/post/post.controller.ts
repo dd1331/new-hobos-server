@@ -6,10 +6,12 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
+import { PagingDTO } from '../common/paging.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostService } from './post.service';
@@ -25,9 +27,9 @@ export class PostController {
     return this.postService.post(dto);
   }
 
-  @Get()
-  findAll() {
-    return this.postService.findAll();
+  @Get(':categoryId')
+  getList(@Query() dto: PagingDTO, @Param('categoryId') categoryId: number) {
+    return this.postService.getList(categoryId, dto);
   }
 
   @Get(':id')
