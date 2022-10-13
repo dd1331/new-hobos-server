@@ -9,6 +9,7 @@ export const dataSourceOptions: DataSourceOptions = {
   database: 'hobos',
   synchronize: true,
   dropSchema: true,
+  logging: ['error'],
 };
 
 export const dataSource: DataSource = new DataSource({

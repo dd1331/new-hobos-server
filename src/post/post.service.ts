@@ -15,16 +15,18 @@ export class PostService {
   ) {}
   async post(dto: CreatePostDto) {
     return this.dataSource.transaction(async (manager: EntityManager) => {
-      const { categoryId } = dto;
+      const { categoryIds } = dto;
 
       const post = manager.create(Post, dto);
       await manager.save(post);
-      const postCategory = manager.create(PostCategory, {
-        post,
-        categoryId,
-      });
+      const postCategories = categoryIds.map((categoryId) =>
+        manager.create(PostCategory, {
+          post,
+          categoryId,
+        }),
+      );
 
-      await manager.save(postCategory);
+      await manager.save(postCategories);
 
       return post;
     });
@@ -34,15 +36,18 @@ export class PostService {
     return this.postRepo.getList(this.dataSource.manager, categoryId, dto);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
+  async update({ postId, categoryIds, content, title }: UpdatePostDto) {
+    const post = await this.postRepo.findOneOrFail({
+      where: { id: postId },
+    });
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
-  }
+    const categories = await this.dataSource.manager.save(
+      PostCategory,
+      categoryIds.map((categoryId) => ({ categoryId, postId })),
+    );
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+    post.update({ title, content, categories });
+
+    return this.postRepo.save(post);
   }
 }

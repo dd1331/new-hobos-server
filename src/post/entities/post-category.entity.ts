@@ -5,7 +5,7 @@ import { Post } from './post.entity';
 
 @Entity()
 export class PostCategory extends Common {
-  @Column({ name: 'post_id' })
+  @Column({ name: 'post_id', nullable: true })
   postId: number;
 
   @Column({ name: 'category_id' })
