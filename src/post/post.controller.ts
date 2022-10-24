@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -42,8 +44,9 @@ export class PostController {
   //   return this.postService.update(+id, updatePostDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.postService.remove(+id);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@User() { id }: ReqUser, @Param('id', ParseIntPipe) postId: number) {
+    return this.postService.remove({ userId: id, id: postId });
+  }
 }

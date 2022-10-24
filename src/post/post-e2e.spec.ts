@@ -8,6 +8,7 @@ import { LoginLocalDto } from '../auth/dto/login-local.dto';
 import { LoginResDto } from '../auth/dto/login-res.dto';
 import { Category } from '../category/entities/category.entity';
 import { HttpExceptionFilter } from '../http-exception.filter';
+import { OrmExceptionFilter } from '../orm-exception.filter';
 import { SignupLocalDTO } from '../user/dto/signup-local.dto';
 import { UserModule } from '../user/user.module';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -34,12 +35,10 @@ describe('Post', () => {
           entities: [Category],
         }),
       ],
-    })
-      .overrideFilter(HttpExceptionFilter)
-      .useClass(HttpExceptionFilter)
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication();
+    app.useGlobalFilters(new HttpExceptionFilter(), new OrmExceptionFilter());
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
@@ -56,6 +55,7 @@ describe('Post', () => {
 
     req = request(app.getHttpServer());
     const { user, tokens }: LoginResDto = await signupLocal(req, dto);
+
     accessToken = tokens.accessToken;
   });
   afterAll(async () => {
@@ -99,13 +99,16 @@ describe('Post', () => {
     });
   });
   describe('post update', () => {
-    it('성공', async () => {
+    let posted;
+    beforeEach(async () => {
       const postDTO: CreatePostDto = {
         title: 'test title',
         content: 'test content',
         categoryIds: [category.id],
       };
-      const posted = await post(req, accessToken, postDTO);
+      posted = await post(req, accessToken, postDTO);
+    });
+    it('성공', async () => {
       const dto: UpdatePostDto = {
         title: 'updated',
         content: 'updated contetn',
@@ -115,7 +118,62 @@ describe('Post', () => {
       const { body } = await req
         .patch('/post')
         .send(dto)
-        .set({ Authorization: 'Bearer ' + accessToken });
+        .set({ Authorization: 'Bearer ' + accessToken })
+        .expect(HttpStatus.OK);
+      expect.assertions(3);
+      expect(body.title).toBe(dto.title);
+      expect(body.content).toBe(dto.content);
+      expect(body.categories.map((category) => category.categoryId)).toEqual([
+        2, 3,
+      ]);
+    });
+    it('실패', async () => {
+      const signupLocalDTO = { email: 'test1234@test.com', password: '1331' };
+      const differentUser: LoginResDto = await signupLocal(req, signupLocalDTO);
+      const accessToken = differentUser.tokens.accessToken;
+      const dto: UpdatePostDto = {
+        title: 'updated',
+        content: 'updated contetn',
+        categoryIds: [2, 3],
+        postId: posted.id,
+      };
+      await req
+        .patch('/post')
+        .send(dto)
+        .set({ Authorization: 'Bearer ' + accessToken })
+        .expect(HttpStatus.NOT_FOUND);
+    });
+  });
+  describe('게시글 삭제', () => {
+    let posted;
+    beforeEach(async () => {
+      const postDTO: CreatePostDto = {
+        title: 'test title',
+        content: 'test content',
+        categoryIds: [category.id],
+      };
+      posted = await post(req, accessToken, postDTO);
+    });
+    it('실패', async () => {
+      const postId = 9999;
+      await req
+        .delete('/post/' + postId)
+        .set({ Authorization: 'Bearer ' + accessToken })
+        .expect(HttpStatus.NOT_FOUND);
+      await req.delete('/post/' + postId).expect(HttpStatus.UNAUTHORIZED);
+      const signupLocalDTO = { email: 'test12345@test.com', password: '1331' };
+      const differentUser: LoginResDto = await signupLocal(req, signupLocalDTO);
+      const differentAccessToken = differentUser.tokens.accessToken;
+      await req
+        .delete('/post/' + postId)
+        .set({ Authorization: 'Bearer ' + differentAccessToken })
+        .expect(HttpStatus.NOT_FOUND);
+    });
+    it('성공', async () => {
+      await req
+        .delete('/post/' + posted.id)
+        .set({ Authorization: 'Bearer ' + accessToken })
+        .expect(HttpStatus.OK);
     });
   });
 });
