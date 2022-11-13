@@ -17,12 +17,12 @@ export class PostRepository extends Repository<Post> {
       order: { id: 'desc' },
     });
   }
-  getListByCategory(
-    manager: EntityManager,
-    categoryId: number,
-    { take, skip }: PagingDTO,
-  ) {
-    return manager.find(Post, {
+  getListByCategory({
+    take,
+    skip,
+    categoryId,
+  }: PagingDTO & { categoryId: number }) {
+    return this.find({
       where: { categories: { categoryId } },
       relations: { categories: true },
       take,

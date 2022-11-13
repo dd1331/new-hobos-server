@@ -8,6 +8,7 @@ export class PagingDTO {
   size: number;
 
   get take() {
+    if (!this.size) return 5;
     return this.size;
   }
 

@@ -32,15 +32,30 @@ export class PostService {
     });
   }
 
+  getPost(id: number) {
+    return this.postRepo.findOneByOrFail({ id });
+  }
   getList(dto: PagingDTO) {
     return this.postRepo.getList(this.dataSource.manager, dto);
   }
-  getListByCategory(categoryId: number, dto: PagingDTO) {
-    return this.postRepo.getListByCategory(
-      this.dataSource.manager,
-      categoryId,
-      dto,
-    );
+  async getHomeList(dto: PagingDTO & { categoryId: number }) {
+    dto.categoryId = 1;
+    const category1 = await this.postRepo.getListByCategory(dto);
+    dto.categoryId = 2;
+    const category2 = await this.postRepo.getListByCategory(dto);
+    dto.categoryId = 3;
+    const category3 = await this.postRepo.getListByCategory(dto);
+    dto.categoryId = 4;
+    const category4 = await this.postRepo.getListByCategory(dto);
+    return [
+      { categoryId: 1, categoryName: '자유', posts: category1 },
+      { categoryId: 2, categoryName: '자유2', posts: category2 },
+      { categoryId: 3, categoryName: '자유3', posts: category3 },
+      { categoryId: 4, categoryName: '자유4', posts: category4 },
+    ];
+  }
+  getListByCategory(dto: PagingDTO & { categoryId: number }) {
+    return this.postRepo.getListByCategory(dto);
   }
 
   async update({ postId, categoryIds, content, title, userId }: UpdatePostDto) {

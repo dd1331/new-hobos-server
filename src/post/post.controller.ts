@@ -17,6 +17,10 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostService } from './post.service';
 
+class TestDTO extends PagingDTO {
+  categoryId: number;
+}
+
 @Controller('post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
@@ -27,17 +31,22 @@ export class PostController {
     dto.userId = id;
     return this.postService.post(dto);
   }
+  @Get('category')
+  getListByCategory(@Query() dto: TestDTO) {
+    return this.postService.getListByCategory(dto);
+  }
+  @Get('home')
+  getHomeList(@Query() dto: TestDTO) {
+    return this.postService.getHomeList(dto);
+  }
 
+  @Get(':id')
+  getPost(@Param('id', ParseIntPipe) id: number) {
+    return this.postService.getPost(id);
+  }
   @Get()
   getList(@Query() dto: PagingDTO) {
     return this.postService.getList(dto);
-  }
-  @Get(':categoryId')
-  getListByCategory(
-    @Query() dto: PagingDTO,
-    @Param('categoryId') categoryId: number,
-  ) {
-    return this.postService.getListByCategory(categoryId, dto);
   }
 
   @UseGuards(JwtAuthGuard)
