@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { PagingDTO } from '../common/paging.dto';
-import { PostCategory } from './entities/post-category.entity';
 import { Post } from './entities/post.entity';
 
 @Injectable()
@@ -10,14 +9,22 @@ export class PostRepository extends Repository<Post> {
     super(Post, dataSource.createEntityManager());
   }
 
-  getList(
+  getList(manager: EntityManager, { take, skip }: PagingDTO) {
+    return manager.find(Post, {
+      relations: { categories: true },
+      take,
+      skip,
+      order: { id: 'desc' },
+    });
+  }
+  getListByCategory(
     manager: EntityManager,
     categoryId: number,
     { take, skip }: PagingDTO,
   ) {
-    return manager.find(PostCategory, {
-      where: { categoryId },
-      relations: { post: true },
+    return manager.find(Post, {
+      where: { categories: { categoryId } },
+      relations: { categories: true },
       take,
       skip,
     });

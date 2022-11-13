@@ -17,7 +17,7 @@ export class UserService {
     const hasedPassword = await this.hashPassword(dto.password);
     const password = hasedPassword;
 
-    this.checkDuplication(dto);
+    await this.checkDuplication(dto);
     await this.userRepo.insert({ ...dto, password });
     return this.authService.loginLocal({ password, email: dto.email });
   }

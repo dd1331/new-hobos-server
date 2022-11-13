@@ -32,8 +32,15 @@ export class PostService {
     });
   }
 
-  getList(categoryId: number, dto: PagingDTO) {
-    return this.postRepo.getList(this.dataSource.manager, categoryId, dto);
+  getList(dto: PagingDTO) {
+    return this.postRepo.getList(this.dataSource.manager, dto);
+  }
+  getListByCategory(categoryId: number, dto: PagingDTO) {
+    return this.postRepo.getListByCategory(
+      this.dataSource.manager,
+      categoryId,
+      dto,
+    );
   }
 
   async update({ postId, categoryIds, content, title, userId }: UpdatePostDto) {

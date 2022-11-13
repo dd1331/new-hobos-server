@@ -1,9 +1,10 @@
 import {
   Column,
   Entity,
-  ManyToOne, Tree,
+  ManyToOne,
+  Tree,
   TreeChildren,
-  TreeParent
+  TreeParent,
 } from 'typeorm';
 import { Common } from '../../common/common.entity';
 import { PostCategory } from '../../post/entities/post-category.entity';

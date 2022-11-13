@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
 } from '@nestjs/common';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

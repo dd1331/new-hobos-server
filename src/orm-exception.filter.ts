@@ -2,7 +2,7 @@ import {
   ArgumentsHost,
   Catch,
   ExceptionFilter,
-  HttpStatus
+  HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { EntityNotFoundError, TypeORMError } from 'typeorm';

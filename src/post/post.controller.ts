@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards
+  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
@@ -28,9 +28,16 @@ export class PostController {
     return this.postService.post(dto);
   }
 
+  @Get()
+  getList(@Query() dto: PagingDTO) {
+    return this.postService.getList(dto);
+  }
   @Get(':categoryId')
-  getList(@Query() dto: PagingDTO, @Param('categoryId') categoryId: number) {
-    return this.postService.getList(categoryId, dto);
+  getListByCategory(
+    @Query() dto: PagingDTO,
+    @Param('categoryId') categoryId: number,
+  ) {
+    return this.postService.getListByCategory(categoryId, dto);
   }
 
   @UseGuards(JwtAuthGuard)
