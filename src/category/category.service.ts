@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
+import { Category } from './entities/category.entity';
 
 @Injectable()
 export class CategoryService {
+  constructor(private readonly dataSource: DataSource) {}
   create(createCategoryDto: CreateCategoryDto) {
     return 'This action adds a new category';
   }
 
-  findAll() {
-    return `This action returns all category`;
+  getCategories() {
+    const categoryRepo = this.dataSource.getRepository(Category);
+    return categoryRepo.find();
   }
 
   findOne(id: number) {
