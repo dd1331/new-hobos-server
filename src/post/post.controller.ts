@@ -4,12 +4,14 @@ import {
   Delete,
   Get,
   Param,
+  ParseArrayPipe,
   ParseIntPipe,
   Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { Transform, Type } from 'class-transformer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { PagingDTO } from '../common/paging.dto';
@@ -18,7 +20,10 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PostService } from './post.service';
 
 class TestDTO extends PagingDTO {
-  categoryId: number;
+  @Transform(({ value }) => {
+    return value.map((o) => Number(decodeURIComponent(o)));
+  })
+  categoryIds: number[];
 }
 
 @Controller('post')
@@ -31,9 +36,9 @@ export class PostController {
     dto.userId = id;
     return this.postService.post(dto);
   }
-  @Get('category')
-  getListByCategory(@Query() dto: TestDTO) {
-    return this.postService.getListByCategory(dto);
+  @Get('category/:id')
+  getListByCategory(@Param('id') id: number, @Query() dto: PagingDTO) {
+    return this.postService.getListByCategory(dto, id);
   }
   @Get('home')
   getHomeList(@Query() dto: TestDTO) {

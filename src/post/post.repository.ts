@@ -17,11 +17,7 @@ export class PostRepository extends Repository<Post> {
       order: { id: 'desc' },
     });
   }
-  getListByCategory({
-    take,
-    skip,
-    categoryId,
-  }: PagingDTO & { categoryId: number }) {
+  getListByCategory({ take, skip }: PagingDTO, categoryId: number) {
     return this.find({
       where: { categories: { categoryId } },
       relations: { categories: true },
