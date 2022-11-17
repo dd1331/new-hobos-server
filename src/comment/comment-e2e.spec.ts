@@ -45,7 +45,7 @@ describe('Comment', () => {
       }),
     );
     await app.init();
-    const dto: SignupLocalDTO = { email: 'test@test.com', password: '1234' };
+    const dto: SignupLocalDTO = { email: 'teffst@test.com', password: '1234' };
 
     manager = app.get<EntityManager>(EntityManager);
 

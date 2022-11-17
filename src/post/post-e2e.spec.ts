@@ -45,7 +45,7 @@ describe('Post', () => {
       }),
     );
     await app.init();
-    const dto: SignupLocalDTO = { email: 'test@test.com', password: '1234' };
+    const dto: SignupLocalDTO = { email: 'testaa@test.com', password: '1234' };
 
     manager = app.get<EntityManager>(EntityManager);
 
@@ -89,13 +89,13 @@ describe('Post', () => {
       await post(req, accessToken, postDTO);
       const size = 2;
       const { body } = await req
-        .get('/post/' + category.id)
-        .query({ page: 1, size })
+        .get('/post/category')
+        .query({ page: 1, size, categoryId: category.id })
         .expect(HttpStatus.OK);
       const [posted] = body;
       expect(body.length).toBe(size);
-      expect(posted.post.title).toBe(postDTO.title);
-      expect(posted.post.content).toBe(postDTO.content);
+      expect(posted.title).toBe(postDTO.title);
+      expect(posted.content).toBe(postDTO.content);
     });
   });
   describe('post update', () => {

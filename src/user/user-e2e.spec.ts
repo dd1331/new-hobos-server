@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { UserModule } from '../../src/user/User.module';
 import { UserService } from '../../src/user/User.service';
 
-describe('User', () => {
+describe.skip('User', () => {
   let app: INestApplication;
   const userService = { findAll: () => ['test'] };
 

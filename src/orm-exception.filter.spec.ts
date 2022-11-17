@@ -1,7 +1,7 @@
-import { OrmFilter } from './orm-exception.filter';
+import { OrmExceptionFilter } from './orm-exception.filter';
 
-describe('OrmFilter', () => {
+describe('OrmExceptionFilter', () => {
   it('should be defined', () => {
-    expect(new OrmFilter()).toBeDefined();
+    expect(new OrmExceptionFilter()).toBeDefined();
   });
 });

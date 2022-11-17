@@ -8,7 +8,7 @@ export const dataSourceOptions: DataSourceOptions = {
   password: '1331',
   database: 'hobos',
   synchronize: true,
-  dropSchema: false,
+  dropSchema: true,
   logging: ['error'],
 };
 

@@ -19,7 +19,10 @@ describe('Auth', () => {
       imports: [
         AuthModule,
         UserModule,
-        TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+        TypeOrmModule.forRoot({
+          ...dataSourceOptions,
+          autoLoadEntities: true,
+        }),
       ],
     })
       .overrideFilter(HttpExceptionFilter)
@@ -34,7 +37,10 @@ describe('Auth', () => {
 
   describe('auth', () => {
     let accessToken;
-    const dto: SignupLocalDTO = { email: 'test@test.com', password: '1234' };
+    const dto: SignupLocalDTO = {
+      email: 't4123est@test.com',
+      password: '1234',
+    };
     beforeAll(async () => {
       const { user, tokens }: LoginResDto = await signupLocal(req, dto);
       accessToken = tokens.accessToken;
