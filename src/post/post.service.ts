@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { async } from 'rxjs';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
 import { PagingDTO } from '../common/paging.dto';

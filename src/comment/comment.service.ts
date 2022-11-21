@@ -18,8 +18,13 @@ export class CommentService {
     return comment;
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  findAll(postId: number) {
+    const commentRepo = this.dataSource.getRepository(Comment);
+    return commentRepo.find({
+      where: { postId },
+      relations: { user: true },
+      order: { id: 'desc' },
+    });
   }
 
   findOne(id: number) {

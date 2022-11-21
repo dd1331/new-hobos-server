@@ -8,7 +8,7 @@ export class Post extends Common {
   @Column()
   title: string;
 
-  @Column()
+  @Column('text')
   content: string;
 
   @Column({ name: 'user_id' })

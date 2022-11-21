@@ -5,7 +5,7 @@ import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Comment extends Common {
-  @Column()
+  @Column('text')
   content: string;
 
   @Column({ name: 'user_id' })
