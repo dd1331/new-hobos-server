@@ -11,12 +11,12 @@ export class Post extends Common {
   @Column('text')
   content: string;
 
-  @Column({ name: 'user_id' })
-  userId: number;
+  @Column({ name: 'poster_id' })
+  posterId: number;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @JoinColumn({ name: 'poster_id' })
+  poster: User;
 
   @OneToMany(() => PostCategory, (postCategory) => postCategory.post, {
     cascade: true,

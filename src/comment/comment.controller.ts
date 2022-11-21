@@ -22,7 +22,7 @@ export class CommentController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@User() { id }: ReqUser, @Body() dto: CreateCommentDto) {
-    dto.userId = id;
+    dto.commenterId = id;
     return this.commentService.create(dto);
   }
 

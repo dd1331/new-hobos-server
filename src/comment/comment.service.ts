@@ -9,11 +9,11 @@ import { Comment } from './entities/comment.entity';
 export class CommentService {
   constructor(private readonly dataSource: DataSource) {}
 
-  async create({ content, postId, userId }: CreateCommentDto) {
+  async create({ content, postId, commenterId }: CreateCommentDto) {
     const commentRepo = this.dataSource.getRepository(Comment);
     const postRepo = this.dataSource.getRepository(Post);
     const post = await postRepo.findOneByOrFail({ id: postId });
-    const comment = commentRepo.create({ post, content, userId });
+    const comment = commentRepo.create({ post, content, commenterId });
     await commentRepo.save(comment);
     return comment;
   }
@@ -22,7 +22,7 @@ export class CommentService {
     const commentRepo = this.dataSource.getRepository(Comment);
     return commentRepo.find({
       where: { postId },
-      relations: { user: true },
+      relations: { commenter: true },
       order: { id: 'desc' },
     });
   }

@@ -32,7 +32,7 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Post()
   post(@Body() dto: CreatePostDto, @User() { id }: ReqUser) {
-    dto.userId = id;
+    dto.posterId = id;
     return this.postService.post(dto);
   }
   @Get('category/:id')
@@ -56,7 +56,7 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Patch()
   update(@User() { id }: ReqUser, @Body() dto: UpdatePostDto) {
-    return this.postService.update({ ...dto, userId: id });
+    return this.postService.update({ ...dto, posterId: id });
   }
 
   // @Patch(':id')
@@ -67,6 +67,6 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@User() { id }: ReqUser, @Param('id', ParseIntPipe) postId: number) {
-    return this.postService.remove({ userId: id, id: postId });
+    return this.postService.remove({ posterId: id, id: postId });
   }
 }

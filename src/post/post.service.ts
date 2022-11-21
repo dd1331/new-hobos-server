@@ -57,9 +57,15 @@ export class PostService {
     return this.postRepo.getListByCategory(dto, categoryId);
   }
 
-  async update({ postId, categoryIds, content, title, userId }: UpdatePostDto) {
+  async update({
+    postId,
+    categoryIds,
+    content,
+    title,
+    posterId,
+  }: UpdatePostDto) {
     const post = await this.postRepo.findOneOrFail({
-      where: { id: postId, userId },
+      where: { id: postId, posterId },
     });
 
     const categories = await this.dataSource.manager.save(
@@ -72,8 +78,8 @@ export class PostService {
     return this.postRepo.save(post);
   }
 
-  async remove({ userId, id }: { userId: number; id: number }) {
-    const found = await this.postRepo.findOneByOrFail({ userId, id });
+  async remove({ posterId, id }: { posterId: number; id: number }) {
+    const found = await this.postRepo.findOneByOrFail({ posterId, id });
     return this.postRepo.softRemove(found);
   }
 }

@@ -8,8 +8,8 @@ export class Comment extends Common {
   @Column('text')
   content: string;
 
-  @Column({ name: 'user_id' })
-  userId: number;
+  @Column({ name: 'commenter_id' })
+  commenterId: number;
 
   @Column({ name: 'post_id' })
   postId: number;
@@ -19,6 +19,6 @@ export class Comment extends Common {
   post: Post;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @JoinColumn({ name: 'commenter_id' })
+  commenter: User;
 }

@@ -11,7 +11,7 @@ export class PostRepository extends Repository<Post> {
 
   getList(manager: EntityManager, { take, skip }: PagingDTO) {
     return manager.find(Post, {
-      relations: { categories: true },
+      relations: { categories: true, poster: true },
       take,
       skip,
       order: { id: 'desc' },
@@ -20,9 +20,10 @@ export class PostRepository extends Repository<Post> {
   getListByCategory({ take, skip }: PagingDTO, categoryId: number) {
     return this.find({
       where: { categories: { categoryId } },
-      relations: { categories: true },
+      relations: { categories: true, poster: true },
       take,
       skip,
+      order: { id: 'desc' },
     });
   }
 }

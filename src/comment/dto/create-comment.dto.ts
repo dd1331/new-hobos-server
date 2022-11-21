@@ -9,5 +9,5 @@ export class CreateCommentDto {
   @IsString()
   content: string;
 
-  userId?: number;
+  commenterId?: number;
 }
