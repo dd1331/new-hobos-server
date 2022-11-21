@@ -13,6 +13,10 @@ export class UserService {
     private readonly userRepo: UserRepository,
     private readonly authService: AuthService,
   ) {}
+
+  getUser(id: number) {
+    return this.userRepo.findOneBy({ id });
+  }
   async signupLocal(dto: SignupLocalDTO): Promise<LoginResDto> {
     const hasedPassword = await this.hashPassword(dto.password);
     const password = hasedPassword;
