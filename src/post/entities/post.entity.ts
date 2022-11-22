@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Comment } from '../../comment/entities/comment.entity';
 import { Common } from '../../common/common.entity';
 import { User } from '../../user/entities/user.entity';
 import { PostCategory } from './post-category.entity';
@@ -18,10 +19,13 @@ export class Post extends Common {
   @JoinColumn({ name: 'poster_id' })
   poster: User;
 
-  @OneToMany(() => PostCategory, (postCategory) => postCategory.post, {
+  @OneToMany(() => PostCategory, ({ post }) => post, {
     cascade: true,
   })
   categories: PostCategory[];
+
+  @OneToMany(() => Comment, ({ post }) => post)
+  comments: Comment[];
 
   update({
     title,

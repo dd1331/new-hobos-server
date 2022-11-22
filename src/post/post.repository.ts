@@ -18,12 +18,14 @@ export class PostRepository extends Repository<Post> {
     });
   }
   getListByCategory({ take, skip }: PagingDTO, categoryId: number) {
-    return this.find({
-      where: { categories: { categoryId } },
-      relations: { categories: true, poster: true },
-      take,
-      skip,
-      order: { id: 'desc' },
-    });
+    return this.createQueryBuilder('post')
+      .innerJoinAndSelect('post.categories', 'category')
+      .innerJoinAndSelect('post.poster', 'poster')
+      .loadRelationCountAndMap('post.totalComments', 'post.comments')
+      .where('category.categoryId =:categoryId', { categoryId })
+      .take(take)
+      .skip(skip)
+      .orderBy('post.id', 'DESC')
+      .getMany();
   }
 }

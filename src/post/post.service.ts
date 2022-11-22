@@ -6,6 +6,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostCategory } from './entities/post-category.entity';
 import { Post } from './entities/post.entity';
+import { TestDTO } from './post.controller';
 import { PostRepository } from './post.repository';
 
 @Injectable()
@@ -39,12 +40,13 @@ export class PostService {
   getList(dto: PagingDTO) {
     return this.postRepo.getList(this.dataSource.manager, dto);
   }
-  async getHomeList(dto: PagingDTO & { categoryIds: number[] }) {
+  async getHomeList(dto: TestDTO) {
     const categories = await this.dataSource
       .getRepository(Category)
       .findBy({ id: In(dto.categoryIds) });
 
     const promises = categories.map(async (category) => {
+      // dto.categoryId = category.id as number;
       const posts = await this.postRepo.getListByCategory(dto, category.id);
       return { posts, category };
     });
@@ -53,8 +55,8 @@ export class PostService {
 
     return posts;
   }
-  getListByCategory(dto: PagingDTO, categoryId: number) {
-    return this.postRepo.getListByCategory(dto, categoryId);
+  getListByCategory(dto: PagingDTO & { categoryId: number }) {
+    return this.postRepo.getListByCategory(dto, dto.categoryId);
   }
 
   async update({

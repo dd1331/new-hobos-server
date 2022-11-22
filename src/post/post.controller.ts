@@ -18,11 +18,14 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostService } from './post.service';
 
-class TestDTO extends PagingDTO {
+export class TestDTO extends PagingDTO {
   @Transform(({ value }) => {
     return value.map((o) => Number(decodeURIComponent(o)));
   })
   categoryIds: number[];
+}
+class TestDTO2 extends PagingDTO {
+  categoryId: number;
 }
 
 @Controller('post')
@@ -35,9 +38,9 @@ export class PostController {
     dto.posterId = id;
     return this.postService.post(dto);
   }
-  @Get('category/:id')
-  getListByCategory(@Param('id') id: number, @Query() dto: PagingDTO) {
-    return this.postService.getListByCategory(dto, id);
+  @Get()
+  getListByCategory(@Query() dto: TestDTO2) {
+    return this.postService.getListByCategory(dto);
   }
   @Get('home')
   getHomeList(@Query() dto: TestDTO) {
