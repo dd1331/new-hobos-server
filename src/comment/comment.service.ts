@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, IsNull } from 'typeorm';
 import { Post } from '../post/entities/post.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -28,13 +28,15 @@ export class CommentService {
     return commentRepo.save(child);
   }
 
-  findAll(postId: number) {
+  async findAll(postId: number) {
     const commentRepo = this.dataSource.getRepository(Comment);
-    return commentRepo.find({
-      where: { postId },
-      relations: { commenter: true },
+    const total = await commentRepo.countBy({ postId });
+    const comments = await commentRepo.find({
+      where: { postId, parentCommentId: IsNull() },
+      relations: { commenter: true, childComments: { commenter: true } },
       order: { id: 'desc' },
     });
+    return { total, comments };
   }
 
   findOne(id: number) {
