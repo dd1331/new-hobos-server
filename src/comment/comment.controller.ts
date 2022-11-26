@@ -43,6 +43,17 @@ export class CommentController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post(':id')
+  createChild(
+    @User() { id }: ReqUser,
+    @Param('id') commentId: number,
+    @Body() dto: CreateCommentDto,
+  ) {
+    dto.commenterId = id;
+    return this.commentService.createChild(commentId, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(
     @User() { id }: ReqUser,

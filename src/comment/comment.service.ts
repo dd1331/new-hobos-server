@@ -17,6 +17,16 @@ export class CommentService {
     await commentRepo.save(comment);
     return comment;
   }
+  async createChild(id: number, dto: CreateCommentDto) {
+    const commentRepo = this.dataSource.getRepository(Comment);
+
+    const comment = await commentRepo.findOneBy({ id });
+
+    const child = commentRepo.create(dto);
+    child.parentComment = comment;
+
+    return commentRepo.save(child);
+  }
 
   findAll(postId: number) {
     const commentRepo = this.dataSource.getRepository(Comment);
