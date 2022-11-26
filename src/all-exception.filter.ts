@@ -12,6 +12,10 @@ export class AllExceptionFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    console.log(
+      '🚀 ~ file: all-exception.filter.ts ~ line 15 ~ AllExceptionFilter ~ exception',
+      exception,
+    );
     // In certain situations `httpAdapter` might not be available in the
     // constructor method, thus we should resolve it here.
     const { httpAdapter } = this.httpAdapterHost;

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -41,8 +42,12 @@ export class CommentController {
     return this.commentService.update(+id, updateCommentDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(+id);
+  remove(
+    @User() { id }: ReqUser,
+    @Param('id', ParseIntPipe) commentId: number,
+  ) {
+    return this.commentService.remove(commentId, id);
   }
 }

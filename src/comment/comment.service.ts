@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Post } from '../post/entities/post.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
@@ -35,7 +35,12 @@ export class CommentService {
     return `This action updates a #${id} comment`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(id: number, commenterId: number) {
+    const repo = this.dataSource.getRepository(Comment);
+    const comment = await repo.findOneBy({ id, commenterId });
+
+    if (!comment) throw new NotFoundException();
+
+    return repo.softRemove(comment);
   }
 }
