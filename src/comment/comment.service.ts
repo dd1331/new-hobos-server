@@ -49,7 +49,10 @@ export class CommentService {
 
   async remove(id: number, commenterId: number) {
     const repo = this.dataSource.getRepository(Comment);
-    const comment = await repo.findOneBy({ id, commenterId });
+    const comment = await repo.findOne({
+      where: { id, commenterId },
+      relations: { childComments: true },
+    });
 
     if (!comment) throw new NotFoundException();
 

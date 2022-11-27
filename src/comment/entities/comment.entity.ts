@@ -29,6 +29,8 @@ export class Comment extends Common {
   @JoinColumn({ name: 'parent_comment_id' })
   parentComment: Comment;
 
-  @OneToMany(() => Comment, ({ parentComment }) => parentComment)
+  @OneToMany(() => Comment, ({ parentComment }) => parentComment, {
+    cascade: ['soft-remove'],
+  })
   childComments: Comment[];
 }

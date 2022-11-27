@@ -35,7 +35,10 @@ export class PostService {
   }
 
   getPost(id: number) {
-    return this.postRepo.findOneByOrFail({ id });
+    return this.postRepo.findOneOrFail({
+      where: { id },
+      relations: { poster: true },
+    });
   }
   getList(dto: PagingDTO) {
     return this.postRepo.getList(this.dataSource.manager, dto);
