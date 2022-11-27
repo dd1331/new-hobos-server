@@ -21,8 +21,17 @@ export class LikeController {
 
   @UseGuards(JwtAuthGuard)
   @Post('post/:id')
-  create(@User() { id }: ReqUser, @Param('id', ParseIntPipe) postId: number) {
-    return this.likeService.create(id, postId);
+  likePost(@User() { id }: ReqUser, @Param('id', ParseIntPipe) postId: number) {
+    return this.likeService.likePost(id, postId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('comment/:id')
+  likeComment(
+    @User() { id }: ReqUser,
+    @Param('id', ParseIntPipe) commentId: number,
+  ) {
+    return this.likeService.likeComment(id, commentId);
   }
 
   @Get()

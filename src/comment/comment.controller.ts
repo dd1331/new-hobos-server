@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,7 +10,9 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { JwtAuthPassGuard } from '../auth/jwt-auth-pass.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { CommentService } from './comment.service';
@@ -27,9 +30,11 @@ export class CommentController {
     return this.commentService.create(dto);
   }
 
+  @UseGuards(JwtAuthPassGuard)
   @Get()
-  findAll(@Query('postId') postId: number) {
-    return this.commentService.findAll(postId);
+  findAll(@User() user: ReqUser | false, @Query('postId') postId: number) {
+    const userId = user ? user.id : null;
+    return this.commentService.findAll(userId, postId);
   }
 
   @Get(':id')

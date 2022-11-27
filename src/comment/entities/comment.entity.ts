@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Common } from '../../common/common.entity';
+import { CommentLike } from '../../like/entities/comment-like.entity';
 import { Post } from '../../post/entities/post.entity';
 import { User } from '../../user/entities/user.entity';
 
@@ -33,4 +34,7 @@ export class Comment extends Common {
     cascade: ['soft-remove'],
   })
   childComments: Comment[];
+
+  @OneToMany(() => CommentLike, ({ comment }) => comment)
+  likes: CommentLike[];
 }

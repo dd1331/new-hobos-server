@@ -42,7 +42,6 @@ export class PostService {
     const post = await this.postRepo
       .createQueryBuilder('post')
       .innerJoinAndSelect('post.poster', 'poster')
-      .leftJoinAndSelect('post.likes', 'likes')
       .loadRelationCountAndMap('post.totalLikes', 'post.likes')
       .where('post.id =:postId', { postId })
       .getOne();

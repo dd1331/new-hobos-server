@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, IsNull } from 'typeorm';
+import { CommentLike } from '../like/entities/comment-like.entity';
 import { Post } from '../post/entities/post.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -28,14 +29,35 @@ export class CommentService {
     return commentRepo.save(child);
   }
 
-  async findAll(postId: number) {
+  async findAll(likerId: number, postId: number) {
     const commentRepo = this.dataSource.getRepository(Comment);
     const total = await commentRepo.countBy({ postId });
-    const comments = await commentRepo.find({
-      where: { postId, parentCommentId: IsNull() },
-      relations: { commenter: true, childComments: { commenter: true } },
-      order: { id: 'desc' },
-    });
+    const comments = await commentRepo
+      .createQueryBuilder('comment')
+      .innerJoinAndSelect('comment.commenter', 'commenter')
+      .leftJoinAndSelect('comment.childComments', 'childComments')
+      .leftJoinAndSelect('childComments.commenter', 'childCommenter')
+      .loadRelationCountAndMap('comment.totalLikes', 'comment.likes')
+      .loadRelationCountAndMap(
+        'childComments.totalLikes',
+        'childComments.likes',
+      )
+      .loadRelationCountAndMap(
+        'comment.liked',
+        'comment.likes',
+        'commentLikes',
+        (qb) => qb.where('commentLikes.likerId =:likerId', { likerId }),
+      )
+      .loadRelationCountAndMap(
+        'childComments.liked',
+        'childComments.likes',
+        'childCommentLikes',
+        (qb) => qb.where('childCommentLikes.likerId =:likerId', { likerId }),
+      )
+      .where('comment.postId =:postId', { postId })
+      .andWhere('comment.parentCommentId IS NULL')
+      .orderBy('comment.id', 'DESC')
+      .getMany();
     return { total, comments };
   }
 
