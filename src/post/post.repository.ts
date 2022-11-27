@@ -22,6 +22,7 @@ export class PostRepository extends Repository<Post> {
       .innerJoinAndSelect('post.categories', 'category')
       .innerJoinAndSelect('post.poster', 'poster')
       .loadRelationCountAndMap('post.totalComments', 'post.comments')
+      .loadRelationCountAndMap('post.totalLikes', 'post.likes')
       .where('category.categoryId =:categoryId', { categoryId })
       .take(take)
       .skip(skip)
