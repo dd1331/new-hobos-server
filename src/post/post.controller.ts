@@ -61,12 +61,15 @@ export class PostController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthPassGuard)
   @Get(':id')
-  async getPost(
+  async getPostViewAndRead(
     @User() user: ReqUser | false,
     @Param('id', ParseIntPipe) id: number,
   ) {
     const userId = user ? user.id : null;
-    const { post, liked } = await this.postService.getPost(userId, id);
+    const { post, liked } = await this.postService.getPostViewAndRead(
+      userId,
+      id,
+    );
     const res = new PostResponse(post);
     res.liked = liked;
     return res;

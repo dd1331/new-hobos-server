@@ -13,6 +13,9 @@ export class Post extends Common {
   @Column('text')
   content: string;
 
+  @Column()
+  views: number;
+
   @Column({ name: 'poster_id' })
   posterId: number;
 

@@ -35,7 +35,12 @@ export class PostService {
     });
   }
 
-  async getPost(likerId: number | null, postId: number) {
+  // TODO: transaction
+  async getPostViewAndRead(likerId: number, id: number) {
+    await this.postRepo.increment({ id }, 'views', 1);
+    return this.getPostView(likerId, id);
+  }
+  async getPostView(likerId: number | null, postId: number) {
     const liked = await this.dataSource
       .getRepository(PostLike)
       .countBy({ likerId, postId });
