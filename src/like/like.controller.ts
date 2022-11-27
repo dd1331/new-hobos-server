@@ -1,15 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { LikeService } from './like.service';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { UpdateLikeDto } from './dto/update-like.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ReqUser, User } from '../auth/user.decorator';
 
 @Controller('like')
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
-  @Post()
-  create(@Body() createLikeDto: CreateLikeDto) {
-    return this.likeService.create(createLikeDto);
+  @UseGuards(JwtAuthGuard)
+  @Post('post/:id')
+  create(@User() { id }: ReqUser, @Param('id', ParseIntPipe) postId: number) {
+    return this.likeService.create(id, postId);
   }
 
   @Get()

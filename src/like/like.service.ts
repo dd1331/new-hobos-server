@@ -1,11 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLikeDto } from './dto/create-like.dto';
+import { DataSource } from 'typeorm';
 import { UpdateLikeDto } from './dto/update-like.dto';
+import { PostLike } from './entities/post-like.entity';
 
 @Injectable()
 export class LikeService {
-  create(createLikeDto: CreateLikeDto) {
-    return 'This action adds a new like';
+  constructor(private readonly dataSource: DataSource) {}
+  // TODO: composite unique key
+  async create(likerId: number, postId: number) {
+    const repo = this.dataSource.getRepository(PostLike);
+    const exisiting = await repo.findOne({
+      where: { likerId, postId },
+      withDeleted: true,
+    });
+    if (exisiting && exisiting.deletedAt) {
+      return repo.restore(exisiting.id);
+    }
+    if (exisiting && !exisiting.deletedAt) {
+      return repo.softRemove(exisiting);
+    }
+    const like = repo.create({ likerId, postId });
+    return repo.save(like);
   }
 
   findAll() {
