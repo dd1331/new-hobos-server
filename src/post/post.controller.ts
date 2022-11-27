@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,14 +10,24 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Transform } from 'class-transformer';
+import { JwtAuthPassGuard } from '../auth/jwt-auth-pass.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { PagingDTO } from '../common/paging.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { Post as PostEntity } from './entities/post.entity';
 import { PostService } from './post.service';
+
+class PostResponse {
+  constructor(partial: Partial<PostEntity>) {
+    Object.assign(this, partial);
+  }
+  liked: boolean;
+}
 
 export class TestDTO extends PagingDTO {
   @Transform(({ value }) => {
@@ -47,9 +58,18 @@ export class PostController {
     return this.postService.getHomeList(dto);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
+  @UseGuards(JwtAuthPassGuard)
   @Get(':id')
-  getPost(@Param('id', ParseIntPipe) id: number) {
-    return this.postService.getPost(id);
+  async getPost(
+    @User() user: ReqUser | false,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    const userId = user ? user.id : null;
+    const { post, liked } = await this.postService.getPost(userId, id);
+    const res = new PostResponse(post);
+    res.liked = liked;
+    return res;
   }
   @Get()
   getList(@Query() dto: PagingDTO) {

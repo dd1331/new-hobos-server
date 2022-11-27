@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Comment } from '../../comment/entities/comment.entity';
 import { Common } from '../../common/common.entity';
+import { PostLike } from '../../like/entities/post-like.entity';
 import { User } from '../../user/entities/user.entity';
 import { PostCategory } from './post-category.entity';
 
@@ -26,6 +27,9 @@ export class Post extends Common {
 
   @OneToMany(() => Comment, ({ post }) => post)
   comments: Comment[];
+
+  @OneToMany(() => PostLike, ({ post }) => post)
+  likes: PostLike[];
 
   update({
     title,

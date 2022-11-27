@@ -7,11 +7,14 @@ import { User } from '../../user/entities/user.entity';
 export class PostLike extends Common {
   @Column({ name: 'liker_id' })
   likerId: number;
+
   @Column({ name: 'post_id' })
   postId: number;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: 'liker_id' })
   liker: User;
+
   @ManyToOne(() => Post)
   @JoinColumn({ name: 'post_id' })
   post: Post;

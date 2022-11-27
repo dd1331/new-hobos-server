@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
 import { PagingDTO } from '../common/paging.dto';
+import { PostLike } from '../like/entities/post-like.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostCategory } from './entities/post-category.entity';
@@ -34,11 +35,18 @@ export class PostService {
     });
   }
 
-  getPost(id: number) {
-    return this.postRepo.findOneOrFail({
-      where: { id },
-      relations: { poster: true },
-    });
+  async getPost(likerId: number | null, postId: number) {
+    const liked = await this.dataSource
+      .getRepository(PostLike)
+      .countBy({ likerId, postId });
+    const post = await this.postRepo
+      .createQueryBuilder('post')
+      .innerJoinAndSelect('post.poster', 'poster')
+      .leftJoinAndSelect('post.likes', 'likes')
+      .loadRelationCountAndMap('post.totalLikes', 'post.likes')
+      .where('post.id =:postId', { postId })
+      .getOne();
+    return { liked: !!liked, post };
   }
   getList(dto: PagingDTO) {
     return this.postRepo.getList(this.dataSource.manager, dto);
