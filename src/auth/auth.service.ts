@@ -24,7 +24,10 @@ export class AuthService {
 
   async loginLocal(dto: LoginLocalDto): Promise<LoginResDto> {
     const { email, password } = dto;
-    const user = await this.userRepo.findOneByOrFail({ email });
+    const user = await this.userRepo.findOneOrFail({
+      where: { email },
+      relations: { career: { job: true } },
+    });
 
     this.comparePasswordOrFail(password);
 

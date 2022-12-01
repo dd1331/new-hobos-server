@@ -15,7 +15,10 @@ export class UserService {
   ) {}
 
   getUser(id: number) {
-    return this.userRepo.findOneBy({ id });
+    return this.userRepo.findOne({
+      where: { id },
+      relations: { career: { job: true } },
+    });
   }
   async signupLocal(dto: SignupLocalDTO): Promise<LoginResDto> {
     const hasedPassword = await this.hashPassword(dto.password);
