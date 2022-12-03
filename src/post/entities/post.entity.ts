@@ -13,7 +13,7 @@ export class Post extends Common {
   @Column('text')
   content: string;
 
-  @Column()
+  @Column({ default: 0 })
   views: number;
 
   @Column({ name: 'poster_id' })

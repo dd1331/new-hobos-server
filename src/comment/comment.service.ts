@@ -35,6 +35,8 @@ export class CommentService {
     const comments = await commentRepo
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.commenter', 'commenter')
+      .leftJoinAndSelect('commenter.career', 'career')
+      .leftJoinAndSelect('career.job', 'job')
       .leftJoinAndSelect('comment.childComments', 'childComments')
       .leftJoinAndSelect('childComments.commenter', 'childCommenter')
       .loadRelationCountAndMap('comment.totalLikes', 'comment.likes')

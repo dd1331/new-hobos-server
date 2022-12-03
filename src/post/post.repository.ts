@@ -21,6 +21,8 @@ export class PostRepository extends Repository<Post> {
     return this.createQueryBuilder('post')
       .innerJoinAndSelect('post.categories', 'category')
       .innerJoinAndSelect('post.poster', 'poster')
+      .leftJoinAndSelect('poster.career', 'career')
+      .leftJoinAndSelect('career.job', 'job')
       .loadRelationCountAndMap('post.totalComments', 'post.comments')
       .loadRelationCountAndMap('post.totalLikes', 'post.likes')
       .where('category.categoryId =:categoryId', { categoryId })

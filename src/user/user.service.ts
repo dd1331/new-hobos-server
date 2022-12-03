@@ -1,10 +1,13 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { DataSource } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { LoginResDto } from '../auth/dto/login-res.dto';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { SignupDTO } from './dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Career } from './entities/career';
+import { Job } from './entities/job.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()
@@ -12,6 +15,7 @@ export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
     private readonly authService: AuthService,
+    private readonly dataSource: DataSource,
   ) {}
 
   getUser(id: number) {
@@ -52,8 +56,20 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, dto: UpdateUserDto) {
+    const job = await this.dataSource
+      .getRepository(Job)
+      .findOneBy({ id: dto.jobId });
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: { career: { job: true } },
+    });
+
+    const career = this.dataSource
+      .getRepository(Career)
+      .create({ job, year: dto.year });
+    user.update({ ...dto, career });
+    return this.userRepo.save(user);
   }
 
   remove(id: number) {

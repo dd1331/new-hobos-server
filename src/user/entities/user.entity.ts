@@ -1,6 +1,8 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Common } from '../../common/common.entity';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { Career } from './career';
+import { Job } from './job.entity';
 
 @Entity()
 export class User extends Common {
@@ -11,7 +13,13 @@ export class User extends Common {
   @Column()
   password: string;
 
-  @Column(() => Career, { prefix: false })
+  // @Column(() => Career, { prefix: false })
+  // career: Career;
+
+  @OneToOne(() => Career, {
+    cascade: true,
+  })
+  @JoinColumn()
   career: Career;
 
   @Column({ name: 'refresh_token', nullable: true })
@@ -19,5 +27,9 @@ export class User extends Common {
 
   login(refreshToken) {
     this.refreshToken = refreshToken;
+  }
+  update({ nickname, career }: UpdateUserDto & { career: Career }) {
+    this.nickname = nickname;
+    this.career = career;
   }
 }
