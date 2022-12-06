@@ -1,13 +1,13 @@
 import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
-import { AuthService } from '../auth/auth.service';
-import { AuthServiceImpl } from '../auth/auth.service.impl';
-import { SignupLocalDTO } from './dto/signup-local.dto';
-import { User } from './entities/user.entity';
-import { UserRepository } from './user.repository';
-import { userRepositoryMock } from './user.repository.mock';
-import { UserService } from './user.service';
+import { AuthService } from '../../auth/auth.service';
+import { AuthServiceImpl } from '../../auth/auth.service.impl';
+import { SignupLocalDTO } from '../dto/signup-local.dto';
+import { User } from '../entities/user.entity';
+import { UserRepository } from '../user.repository';
+import { userRepositoryMock } from '../user.repository.mock';
+import { UserService } from '../user.service';
 
 const moduleMocker = new ModuleMocker(global);
 const authServiceMock: AuthService = {
