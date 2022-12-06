@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { DataSource } from 'typeorm';
-import { AuthServiceImpl } from '../auth/auth.service.impl';
+import { AuthServiceImpl } from '../auth/auth.serviceimpl';
 import { LoginResDto } from '../auth/dto/login-res.dto';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { SignupDTO } from './dto/signup.dto';

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
-import { AuthServiceImpl } from './auth.service.impl';
+import { AuthController } from '../auth.controller';
+import { AuthServiceImpl } from '../auth.serviceimpl';
 
 describe.skip('AuthController', () => {
   let controller: AuthController;

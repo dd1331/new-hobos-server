@@ -4,13 +4,11 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
-  Patch,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

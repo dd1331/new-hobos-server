@@ -2,7 +2,7 @@ import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 import { AuthService } from '../../auth/auth.service';
-import { AuthServiceImpl } from '../../auth/auth.service.impl';
+import { AuthServiceImpl } from '../../auth/auth.serviceImpl';
 import { SignupLocalDTO } from '../dto/signup-local.dto';
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../user.repository';

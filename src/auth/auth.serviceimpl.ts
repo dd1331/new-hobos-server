@@ -29,8 +29,7 @@ export class AuthServiceImpl implements AuthService {
       where: { email },
       relations: { career: { job: true } },
     });
-
-    this.comparePasswordOrFail(password);
+    user.comparePassword(password);
 
     const tokens = this.generateTokens(user);
     user.login(tokens.refreshToken);

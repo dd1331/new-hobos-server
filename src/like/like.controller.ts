@@ -10,10 +10,9 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { LikeService } from './like.service';
-import { CreateLikeDto } from './dto/create-like.dto';
 import { UpdateLikeDto } from './dto/update-like.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('like')
 export class LikeController {

@@ -13,8 +13,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { JwtAuthPassGuard } from '../auth/jwt-auth-pass.guard';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthPassGuard } from '../auth/guards/jwt-auth-pass.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { PagingDTO } from '../common/paging.dto';
 import { CreatePostDto } from './dto/create-post.dto';

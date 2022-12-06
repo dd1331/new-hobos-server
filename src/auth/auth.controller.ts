@@ -9,7 +9,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { AuthServiceImpl } from './auth.service.impl';
+import { AuthServiceImpl } from './auth.serviceimpl';
 import { LoginLocalDto } from './dto/login-local.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 

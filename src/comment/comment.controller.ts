@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -10,10 +9,9 @@ import {
   Post,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { JwtAuthPassGuard } from '../auth/jwt-auth-pass.guard';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthPassGuard } from '../auth/guards/jwt-auth-pass.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/create-comment.dto';

@@ -2,13 +2,13 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
-import { dataSourceOptions } from '../../data-source';
-import { HttpExceptionFilter } from '../http-exception.filter';
-import { SignupLocalDTO } from '../user/dto/signup-local.dto';
-import { UserModule } from '../user/user.module';
-import { AuthModule } from './auth.module';
-import { LoginLocalDto } from './dto/login-local.dto';
-import { LoginResDto } from './dto/login-res.dto';
+import { dataSourceOptions } from '../../../data-source';
+import { HttpExceptionFilter } from '../../http-exception.filter';
+import { SignupLocalDTO } from '../../user/dto/signup-local.dto';
+import { UserModule } from '../../user/user.module';
+import { AuthModule } from '../auth.module';
+import { LoginLocalDto } from '../dto/login-local.dto';
+import { LoginResDto } from '../dto/login-res.dto';
 
 describe('Auth', () => {
   let app: INestApplication;

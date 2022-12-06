@@ -1,8 +1,8 @@
+import { BadRequestException } from '@nestjs/common';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Common } from '../../common/common.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { Career } from './career';
-import { Job } from './job.entity';
 
 @Entity()
 export class User extends Common {
@@ -24,6 +24,12 @@ export class User extends Common {
 
   @Column({ name: 'refresh_token', nullable: true })
   refreshToken?: string | null;
+
+  // TODO: 암호화 비교 / 회원가입시 엔티티에서 암호화
+  comparePassword(inputPassword: string) {
+    if (this.password !== inputPassword)
+      throw new BadRequestException('비밀번호 일치하지 않음');
+  }
 
   login(refreshToken) {
     this.refreshToken = refreshToken;
