@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { DataSource } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
+import { AuthServiceImpl } from '../auth/auth.service.impl';
 import { LoginResDto } from '../auth/dto/login-res.dto';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { SignupDTO } from './dto/signup.dto';
@@ -14,7 +14,7 @@ import { UserRepository } from './user.repository';
 export class UserService {
   constructor(
     private readonly userRepo: UserRepository,
-    private readonly authService: AuthService,
+    private readonly authService: AuthServiceImpl,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -30,7 +30,7 @@ export class UserService {
 
     await this.checkDuplication(dto);
 
-    await this.userRepo.insert({
+    await this.userRepo.save({
       ...dto,
       password,
       nickname: new Date().getMilliseconds().toString(),

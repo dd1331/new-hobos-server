@@ -1,15 +1,20 @@
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from '../../data-source';
 import { UserModule } from '../../src/user/User.module';
 import { UserService } from '../../src/user/User.service';
 
-describe.skip('User', () => {
+describe('User', () => {
   let app: INestApplication;
   const userService = { findAll: () => ['test'] };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [UserModule],
+      imports: [
+        UserModule,
+        TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+      ],
     })
       .overrideProvider(UserService)
       .useValue(UserService)

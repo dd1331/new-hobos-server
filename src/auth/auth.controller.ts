@@ -7,15 +7,15 @@ import {
   HttpStatus,
   Param,
   Patch,
-  Post
+  Post,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { AuthServiceImpl } from './auth.service.impl';
 import { LoginLocalDto } from './dto/login-local.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthServiceImpl) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login/local')
