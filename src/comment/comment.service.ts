@@ -39,6 +39,8 @@ export class CommentService {
       .leftJoinAndSelect('career.job', 'job')
       .leftJoinAndSelect('comment.childComments', 'childComments')
       .leftJoinAndSelect('childComments.commenter', 'childCommenter')
+      .leftJoinAndSelect('childCommenter.career', 'childCareer')
+      .leftJoinAndSelect('childCareer.job', 'childJob')
       .loadRelationCountAndMap('comment.totalLikes', 'comment.likes')
       .loadRelationCountAndMap(
         'childComments.totalLikes',

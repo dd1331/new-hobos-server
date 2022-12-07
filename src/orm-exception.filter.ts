@@ -10,6 +10,10 @@ import { EntityNotFoundError, TypeORMError } from 'typeorm';
 @Catch(TypeORMError)
 export class OrmExceptionFilter implements ExceptionFilter {
   catch(exception: TypeORMError, host: ArgumentsHost) {
+    console.log(
+      '🚀 ~ file: orm-exception.filter.ts:13 ~ OrmExceptionFilter ~ exception',
+      exception,
+    );
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
