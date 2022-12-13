@@ -46,17 +46,19 @@ describe('UserService', () => {
     service = module.get<UserService>(UserService);
   });
 
-  it('이메일 중복', async () => {
-    expect.assertions(1);
-    const dto: SignupLocalDTO = { email: 'test@test.com', password: 'tests' };
-    await expect(service.signupLocal(dto)).rejects.toThrow(ConflictException);
+  describe('signupLocal', () => {
+    it('이메일 중복', async () => {
+      expect.assertions(1);
+      const dto: SignupLocalDTO = { email: 'test@test.com', password: 'tests' };
+      await expect(service.signupLocal(dto)).rejects.toThrow(ConflictException);
+    });
+    it('이메일 중복 없음', async () => {
+      expect.assertions(1);
+      const dto: SignupLocalDTO = { email: 'test@test.com', password: 'tests' };
+      userRepositoryMock.findOneBy.mockResolvedValueOnce(undefined);
+      await expect(service.signupLocal(dto)).resolves.toBeTruthy();
+    });
+    it('유저 생성 실패', async () => {});
+    it('비밀번호 해싱', async () => {});
   });
-  it('이메일 중복 없음', async () => {
-    expect.assertions(1);
-    const dto: SignupLocalDTO = { email: 'test@test.com', password: 'tests' };
-    userRepositoryMock.findOneBy.mockResolvedValueOnce(undefined);
-    await expect(service.signupLocal(dto)).resolves.toBeTruthy();
-  });
-  it('유저 생성 실패', async () => {});
-  it('비밀번호 해싱', async () => {});
 });

@@ -16,11 +16,9 @@ export class AuthServiceImpl implements AuthService {
   ) {}
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.userRepo.findOneBy({ email });
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
+    if (!user) return null;
+    await user.password.comparePassword(pass);
+    return user;
   }
 
   async loginLocal(dto: LoginLocalDto): Promise<LoginResDto> {
@@ -29,7 +27,7 @@ export class AuthServiceImpl implements AuthService {
       where: { email },
       relations: { career: { job: true } },
     });
-    user.comparePassword(password);
+    await user.password.comparePassword(password);
 
     const tokens = this.generateTokens(user);
     user.login(tokens.refreshToken);

@@ -1,20 +1,23 @@
-import { BadRequestException } from '@nestjs/common';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Common } from '../../common/common.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { Career } from './career';
+import { Password } from './password.entity';
 
 @Entity()
 export class User extends Common {
+  constructor(partial: Partial<User>) {
+    super();
+    Object.assign(this, partial);
+  }
   @Column()
   email: string;
+
   @Column()
   nickname: string;
-  @Column()
-  password: string;
 
-  // @Column(() => Career, { prefix: false })
-  // career: Career;
+  @Column(() => Password, { prefix: false })
+  private _password: Password;
 
   @OneToOne(() => Career, {
     cascade: true,
@@ -25,10 +28,15 @@ export class User extends Common {
   @Column({ name: 'refresh_token', nullable: true })
   refreshToken?: string | null;
 
-  // TODO: 암호화 비교 / 회원가입시 엔티티에서 암호화
-  comparePassword(inputPassword: string) {
-    if (this.password !== inputPassword)
-      throw new BadRequestException('비밀번호 일치하지 않음');
+  async signup(password: string) {
+    await this._password.setPassword(password);
+  }
+
+  set password(password: Password) {
+    this._password = password;
+  }
+  get password() {
+    return this._password;
   }
 
   login(refreshToken) {

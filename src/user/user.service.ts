@@ -8,6 +8,8 @@ import { SignupDTO } from './dto/signup.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Career } from './entities/career';
 import { Job } from './entities/job.entity';
+import { Password } from './entities/password.entity';
+import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()
@@ -24,18 +26,24 @@ export class UserService {
       relations: { career: { job: true } },
     });
   }
+
+  // TODO: transaction
   async signupLocal(dto: SignupLocalDTO): Promise<LoginResDto> {
-    const hasedPassword = await this.hashPassword(dto.password);
-    const password = hasedPassword;
-
     await this.checkDuplication(dto);
-
-    await this.userRepo.save({
-      ...dto,
-      password,
+    const { email, password } = dto;
+    const user = new User({
+      email,
       nickname: new Date().getMilliseconds().toString(),
+      password: new Password(),
     });
-    return this.authService.loginLocal({ password, email: dto.email });
+
+    await user.signup(password);
+
+    await this.userRepo.save(user);
+    return this.authService.loginLocal({
+      password,
+      email,
+    });
   }
 
   private async hashPassword(password: string) {
