@@ -23,8 +23,8 @@ export class Category extends Common {
   @Column({ type: 'enum', enum: View, default: View.FANCY })
   view: View;
 
-  @ManyToOne(() => PostCategory)
-  postCategory: PostCategory;
+  // @ManyToOne(() => PostCategory)
+  // postCategory: PostCategory;
 
   @TreeChildren()
   children: Category[];

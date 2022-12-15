@@ -11,6 +11,7 @@ import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
 import { PostModule } from './post/post.module';
 import { UserModule } from './user/user.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     CommentModule,
     LikeModule,
     CategoryModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [

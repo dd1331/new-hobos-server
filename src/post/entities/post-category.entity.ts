@@ -15,7 +15,7 @@ export class PostCategory extends Common {
   @JoinColumn({ name: 'post_id' })
   post: Post;
 
-  // @ManyToOne(() => Category)
-  // @JoinColumn({ name: 'category_id' })
-  // category: Category;
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 }

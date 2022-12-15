@@ -6,9 +6,9 @@ export const dataSourceOptions: DataSourceOptions = {
   port: 3306,
   username: 'charlie',
   password: '1331',
-  database: 'hobos',
+  database: process.env.NODE_ENV === 'test' ? 'hobos_test' : 'hobos',
   synchronize: true,
-  dropSchema: true,
+  dropSchema: process.env.NODE_ENV === 'test',
   logging: ['error'],
 };
 
