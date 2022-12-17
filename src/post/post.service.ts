@@ -21,6 +21,7 @@ export class PostService {
       const { categoryIds } = dto;
 
       const post = manager.create(Post, dto);
+      // TODO: map dto.fileUrls to post entity
       await manager.save(post);
       const postCategories = categoryIds.map((categoryId) =>
         manager.create(PostCategory, {

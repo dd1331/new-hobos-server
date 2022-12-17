@@ -60,10 +60,8 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     const PATH = process.env.NODE_ENV + '/user/profile';
-    const REGION = 'ap-northeast-2';
 
-    const filename = await this.uploadService.upload(id, PATH, file);
-    const url = `https://hobos.s3.${REGION}.amazonaws.com/${PATH}/${filename}`;
+    const [url] = await this.uploadService.upload(id, PATH, [file]);
 
     this.userService.updateProfileImage(id, url);
   }

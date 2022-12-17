@@ -9,14 +9,17 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { Transform } from 'class-transformer';
 import { JwtAuthPassGuard } from '../auth/guards/jwt-auth-pass.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
 import { PagingDTO } from '../common/paging.dto';
+import { UploadService } from '../upload/upload.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post as PostEntity } from './entities/post.entity';
@@ -41,12 +44,24 @@ class TestDTO2 extends PagingDTO {
 
 @Controller('post')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly uploadService: UploadService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('files'))
   @Post()
-  post(@Body() dto: CreatePostDto, @User() { id }: ReqUser) {
+  async post(
+    @Body() dto: CreatePostDto,
+    @User() { id }: ReqUser,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    const PATH = process.env.NODE_ENV + '/post/image';
+    const urls = await this.uploadService.upload(id, PATH, files);
+
     dto.posterId = id;
+    dto.fileUrls = urls;
     return this.postService.post(dto);
   }
   @Get()
