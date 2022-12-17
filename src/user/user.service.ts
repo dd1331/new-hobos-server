@@ -80,7 +80,9 @@ export class UserService {
     return this.userRepo.save(user);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async updateProfileImage(id: number, url: string) {
+    const user = await this.userRepo.findOneByOrFail({ id });
+    user.image = url;
+    return this.userRepo.save(user);
   }
 }

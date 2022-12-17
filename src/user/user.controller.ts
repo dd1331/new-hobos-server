@@ -1,3 +1,4 @@
+import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import {
   Body,
   Controller,
@@ -6,17 +7,24 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ReqUser, User } from '../auth/user.decorator';
+import { UploadService } from '../upload/upload.service';
 import { SignupLocalDTO } from './dto/signup-local.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly uploadService: UploadService,
+  ) {}
   @UseGuards(JwtAuthGuard)
   @Get()
   getUser(@User() { id }: ReqUser) {
@@ -44,8 +52,24 @@ export class UserController {
     return this.userService.update(id, updateUserDto);
   }
 
+  @Post('profile/image')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async updateProfileImage(
+    @User() { id }: ReqUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const PATH = process.env.NODE_ENV + '/user/profile';
+    const REGION = 'ap-northeast-2';
+
+    const filename = await this.uploadService.upload(id, PATH, file);
+    const url = `https://hobos.s3.${REGION}.amazonaws.com/${PATH}/${filename}`;
+
+    this.userService.updateProfileImage(id, url);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    // return this.userService.remove(+id);
   }
 }

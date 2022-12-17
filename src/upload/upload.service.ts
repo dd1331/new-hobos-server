@@ -1,40 +1,52 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
-import { CreateUploadDto } from './dto/create-upload.dto';
 import { UpdateUploadDto } from './dto/update-upload.dto';
 import {
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
 } from '@aws-sdk/client-s3';
-import * as path from 'path';
-import * as fs from 'fs';
 @Injectable()
 export class UploadService {
-  // async create(createUploadDto: CreateUploadDto) {
-  async create() {
-    const REGION = 'ap-northeast-2';
+  Bucket = 'hobos';
+  REGION = 'ap-northeast-2';
+
+  /**
+   * @param path user/profile
+   */
+  async upload(userId: number, path: string, file: Express.Multer.File) {
     const s3Client = new S3Client({
-      region: REGION,
+      region: this.REGION,
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       },
     });
-    const file = './package.json'; // Path to and name of object. For example '../myFiles/index.js'.
-    const fileStream = fs.createReadStream(file);
+    const Key = this.getKey(userId, path, file);
     const uploadParams: PutObjectCommandInput = {
-      Bucket: 'hobos',
-      Key: 'user/' + path.basename(file),
-      Body: fileStream,
+      Bucket: this.Bucket,
+      Key,
+      Body: file.buffer,
     };
     try {
-      const data = await s3Client.send(new PutObjectCommand(uploadParams));
-      console.log('Success', data);
-      return data; // For unit tests.
+      await s3Client.send(new PutObjectCommand(uploadParams));
+      const [filename] = Key.split('/').slice(-1);
+      return filename;
     } catch (err) {
       console.log('Error', err);
     }
-    return 'This action adds a new upload';
+  }
+  getKey(userId: number, path: string, file: Express.Multer.File) {
+    return (
+      path +
+      '/' +
+      userId +
+      '-' +
+      file.originalname.split('.')[0] +
+      new Date().getTime() +
+      '.' +
+      file.originalname.split('.')[1]
+    );
   }
 
   findAll() {

@@ -11,13 +11,12 @@ describe('UploadController', () => {
       controllers: [UploadController],
       providers: [UploadService],
     }).compile();
-    // const app = module.createNestApplication();
     controller = module.get<UploadController>(UploadController);
-    // app.init();
   });
 
   it('should be defined', async () => {
-    expect(controller).toBeDefined();
-    await controller.create();
+    // expect.assertions(1);
+    // const res = await controller.upload();
+    // expect(res).toBeTruthy();
   });
 });

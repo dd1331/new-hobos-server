@@ -17,8 +17,8 @@ export class UploadController {
 
   @Post()
   // create(@Body() createUploadDto: CreateUploadDto) {
-  create() {
-    return this.uploadService.create();
+  upload() {
+    // return this.uploadService.upload(key, '');
   }
 
   @Get()

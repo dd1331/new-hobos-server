@@ -25,6 +25,9 @@ export class User extends Common {
   @JoinColumn()
   career: Career;
 
+  @Column()
+  image: string;
+
   @Column({ name: 'refresh_token', nullable: true })
   refreshToken?: string | null;
 
