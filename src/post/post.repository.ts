@@ -23,6 +23,8 @@ export class PostRepository extends Repository<Post> {
       .innerJoinAndSelect('post.poster', 'poster')
       .leftJoinAndSelect('poster.career', 'career')
       .leftJoinAndSelect('career.job', 'job')
+      .leftJoinAndSelect('post.files', 'files')
+      .leftJoinAndSelect('files.file', 'file')
       .loadRelationCountAndMap('post.totalComments', 'post.comments')
       .loadRelationCountAndMap('post.totalLikes', 'post.likes')
       .where('category.categoryId =:categoryId', { categoryId })

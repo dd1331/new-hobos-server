@@ -1,9 +1,11 @@
+import { Exclude } from 'class-transformer';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Comment } from '../../comment/entities/comment.entity';
 import { Common } from '../../common/common.entity';
 import { PostLike } from '../../like/entities/post-like.entity';
 import { User } from '../../user/entities/user.entity';
 import { PostCategory } from './post-category.entity';
+import { PostFile } from './post-file.entity';
 
 @Entity()
 export class Post extends Common {
@@ -15,6 +17,11 @@ export class Post extends Common {
 
   @Column({ default: 0 })
   views: number;
+
+  @OneToMany(() => PostFile, ({ post }) => post, {
+    cascade: ['insert', 'update'],
+  })
+  files: PostFile[];
 
   @Column({ name: 'poster_id' })
   posterId: number;
@@ -33,6 +40,8 @@ export class Post extends Common {
 
   @OneToMany(() => PostLike, ({ post }) => post)
   likes: PostLike[];
+
+  liked?: boolean;
 
   update({
     title,

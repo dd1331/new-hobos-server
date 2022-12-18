@@ -5,7 +5,9 @@ import { PagingDTO } from '../common/paging.dto';
 import { PostLike } from '../like/entities/post-like.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { FileEntity } from './entities/file.entity';
 import { PostCategory } from './entities/post-category.entity';
+import { PostFile } from './entities/post-file.entity';
 import { Post } from './entities/post.entity';
 import { TestDTO } from './post.controller';
 import { PostRepository } from './post.repository';
@@ -21,6 +23,10 @@ export class PostService {
       const { categoryIds } = dto;
 
       const post = manager.create(Post, dto);
+      post.files = dto.fileUrls.map((url) => {
+        const file = manager.create(FileEntity, { url });
+        return manager.create(PostFile, { file });
+      });
       // TODO: map dto.fileUrls to post entity
       await manager.save(post);
       const postCategories = categoryIds.map((categoryId) =>
@@ -50,6 +56,8 @@ export class PostService {
       .innerJoinAndSelect('post.poster', 'poster')
       .leftJoinAndSelect('poster.career', 'career')
       .leftJoinAndSelect('career.job', 'job')
+      .leftJoinAndSelect('post.files', 'files')
+      .leftJoinAndSelect('files.file', 'file')
       .loadRelationCountAndMap('post.totalLikes', 'post.likes')
       .where('post.id =:postId', { postId })
       .getOne();
