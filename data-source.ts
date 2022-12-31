@@ -1,17 +1,19 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-export const dataSourceOptions: DataSourceOptions = {
+const IS_TEST = process.env.NODE_ENV === 'test';
+
+export const dataSourceOptions = (): DataSourceOptions => ({
   type: 'mysql',
-  host: '127.0.0.1',
-  port: 3306,
-  username: 'charlie',
-  password: '1331',
-  database: process.env.NODE_ENV === 'test' ? 'hobos_test' : 'hobos',
-  synchronize: true,
-  dropSchema: process.env.NODE_ENV === 'test',
+  host: process.env.HOST,
+  port: Number(process.env.PORT),
+  username: process.env.USERNAME,
+  password: process.env.PASSWORD,
+  database: IS_TEST ? 'hobos_test' : process.env.DATABASE,
+  synchronize: !!process.env.SYNCRONIZE,
+  dropSchema: IS_TEST,
   logging: ['error'],
-};
+});
 
 export const dataSource: DataSource = new DataSource({
-  ...dataSourceOptions,
+  ...dataSourceOptions(),
 });

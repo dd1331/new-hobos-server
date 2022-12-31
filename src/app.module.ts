@@ -15,7 +15,7 @@ import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
+    TypeOrmModule.forRoot({ ...dataSourceOptions(), autoLoadEntities: true }),
     UserModule,
     AuthModule,
     PostModule,

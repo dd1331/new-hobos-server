@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { Column } from 'typeorm';
 
 export class Password {
