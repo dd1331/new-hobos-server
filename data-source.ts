@@ -9,7 +9,7 @@ export const dataSourceOptions = (): DataSourceOptions => ({
   username: process.env.USERNAME,
   password: process.env.PASSWORD,
   database: IS_TEST ? 'hobos_test' : process.env.DATABASE,
-  synchronize: !!process.env.SYNCRONIZE,
+  synchronize: !!process.env.SYNCHRONIZE,
   dropSchema: IS_TEST,
   logging: ['error'],
 });

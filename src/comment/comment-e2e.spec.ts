@@ -1,4 +1,5 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
@@ -8,6 +9,8 @@ import { LoginLocalDto } from '../auth/dto/login-local.dto';
 import { LoginResDto } from '../auth/dto/login-res.dto';
 import { Category } from '../category/entities/category.entity';
 import { HttpExceptionFilter } from '../http-exception.filter';
+import { CommentLike } from '../like/entities/comment-like.entity';
+import { PostLike } from '../like/entities/post-like.entity';
 import { OrmExceptionFilter } from '../orm-exception.filter';
 import { CreatePostDto } from '../post/dto/create-post.dto';
 import { PostModule } from '../post/post.module';
@@ -29,10 +32,12 @@ describe('Comment', () => {
         PostModule,
         UserModule,
         CommentModule,
+
+        ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
-          ...dataSourceOptions,
+          ...dataSourceOptions(),
           autoLoadEntities: true,
-          entities: [Category],
+          entities: [Category, CommentLike, PostLike],
         }),
       ],
     }).compile();
@@ -45,7 +50,10 @@ describe('Comment', () => {
       }),
     );
     await app.init();
-    const dto: SignupLocalDTO = { email: 'teffst@test.com', password: '1234' };
+    const dto: SignupLocalDTO = {
+      email: 'teffst@test.com',
+      password: '1312312234',
+    };
 
     manager = app.get<EntityManager>(EntityManager);
 

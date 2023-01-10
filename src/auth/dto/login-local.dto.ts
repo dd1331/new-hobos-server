@@ -1,4 +1,5 @@
-export class LoginLocalDto {
-  email: string;
+import { LoginDTO } from './login.dto';
+
+export class LoginLocalDto extends LoginDTO {
   password: string;
 }

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthServiceImpl } from './auth.serviceimpl';
 import { LoginLocalDto } from './dto/login-local.dto';
+import { SignupSSODTO } from './dto/signup-sso.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 
 @Controller('auth')
@@ -21,6 +22,12 @@ export class AuthController {
   @Post('login/local')
   async login(@Body() dto: LoginLocalDto) {
     return this.authService.loginLocal(dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('login/naver')
+  async loginNaver(@Body() dto: SignupSSODTO) {
+    return this.authService.signupSSO(dto);
   }
 
   @Get()

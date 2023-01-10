@@ -50,7 +50,7 @@ describe('CommentService', () => {
       service.create({
         content: 'test',
         postId: 1,
-        userId: 1,
+        commenterId: 1,
       }),
     ).rejects.toThrow(EntityNotFoundError);
   });

@@ -101,9 +101,11 @@ export class PostController {
   async post(
     @Body() dto: CreatePostDto,
     @User() { id }: ReqUser,
-    @UploadedFiles() files: Array<Express.Multer.File>,
+    @UploadedFiles() files: Array<Express.Multer.File> = [],
   ) {
     const PATH = process.env.NODE_ENV + '/post/image';
+    // TODO: incase fileUrls not existing
+
     if (files.length) {
       dto.fileUrls = await this.uploadService.upload(id, PATH, files);
     }
@@ -115,6 +117,10 @@ export class PostController {
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
   async getListByCategory(@Query() dto: TestDTO2): Promise<PostListResponse> {
+    console.log(
+      '🚀 ~ file: post.controller.ts:122 ~ PostController ~ getListByCategory ~ dto',
+      dto,
+    );
     const res = await this.postService.getListByCategory(dto);
     return new PostListResponse({ posts: res });
   }

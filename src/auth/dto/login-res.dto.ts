@@ -1,6 +1,7 @@
 import { User } from '../../user/entities/user.entity';
+import { Tokens } from '../auth.types';
 
 export class LoginResDto {
-  tokens: { accessToken: string; refreshToken: string };
+  tokens: Tokens;
   user: User;
 }

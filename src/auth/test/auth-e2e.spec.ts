@@ -1,4 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
@@ -19,8 +20,9 @@ describe('Auth', () => {
       imports: [
         AuthModule,
         UserModule,
+        ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
-          ...dataSourceOptions,
+          ...dataSourceOptions(),
           autoLoadEntities: true,
         }),
       ],

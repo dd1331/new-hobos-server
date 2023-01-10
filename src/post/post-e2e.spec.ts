@@ -1,4 +1,5 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
@@ -7,7 +8,10 @@ import { dataSourceOptions } from '../../data-source';
 import { LoginLocalDto } from '../auth/dto/login-local.dto';
 import { LoginResDto } from '../auth/dto/login-res.dto';
 import { Category } from '../category/entities/category.entity';
+import { Comment } from '../comment/entities/comment.entity';
 import { HttpExceptionFilter } from '../http-exception.filter';
+import { CommentLike } from '../like/entities/comment-like.entity';
+import { PostLike } from '../like/entities/post-like.entity';
 import { OrmExceptionFilter } from '../orm-exception.filter';
 import { SignupLocalDTO } from '../user/dto/signup-local.dto';
 import { UserModule } from '../user/user.module';
@@ -29,10 +33,11 @@ describe('Post', () => {
       imports: [
         PostModule,
         UserModule,
+        ConfigModule.forRoot(),
         TypeOrmModule.forRoot({
-          ...dataSourceOptions,
+          ...dataSourceOptions(),
           autoLoadEntities: true,
-          entities: [Category],
+          entities: [Category, Comment, PostLike, CommentLike],
         }),
       ],
     }).compile();
@@ -45,11 +50,18 @@ describe('Post', () => {
       }),
     );
     await app.init();
-    const dto: SignupLocalDTO = { email: 'testaa@test.com', password: '1234' };
+    const dto: SignupLocalDTO = {
+      email: 'testaa@test.com',
+      password: '1234312312',
+    };
 
     manager = app.get<EntityManager>(EntityManager);
 
     category = await manager.save(Category, { title: 'test title' });
+    console.log(
+      '🚀 ~ file: post-e2e.spec.ts:61 ~ beforeAll ~ category',
+      category,
+    );
     await manager.save(Category, { title: 'test title2' });
     await manager.save(Category, { title: 'test title3' });
 
@@ -89,11 +101,11 @@ describe('Post', () => {
       await post(req, accessToken, postDTO);
       const size = 2;
       const { body } = await req
-        .get('/post/category')
+        .get('/post')
         .query({ page: 1, size, categoryId: category.id })
         .expect(HttpStatus.OK);
-      const [posted] = body;
-      expect(body.length).toBe(size);
+      const [posted] = body.posts;
+      expect(body.posts.length).toBe(size);
       expect(posted.title).toBe(postDTO.title);
       expect(posted.content).toBe(postDTO.content);
     });
@@ -128,7 +140,10 @@ describe('Post', () => {
       ]);
     });
     it('실패', async () => {
-      const signupLocalDTO = { email: 'test1234@test.com', password: '1331' };
+      const signupLocalDTO = {
+        email: 'test1234@test.com',
+        password: '112312331',
+      };
       const differentUser: LoginResDto = await signupLocal(req, signupLocalDTO);
       const accessToken = differentUser.tokens.accessToken;
       const dto: UpdatePostDto = {
@@ -161,7 +176,10 @@ describe('Post', () => {
         .set({ Authorization: 'Bearer ' + accessToken })
         .expect(HttpStatus.NOT_FOUND);
       await req.delete('/post/' + postId).expect(HttpStatus.UNAUTHORIZED);
-      const signupLocalDTO = { email: 'test12345@test.com', password: '1331' };
+      const signupLocalDTO = {
+        email: 'test12345@test.com',
+        password: '133113123',
+      };
       const differentUser: LoginResDto = await signupLocal(req, signupLocalDTO);
       const differentAccessToken = differentUser.tokens.accessToken;
       await req

@@ -23,7 +23,8 @@ export class PostService {
       const { categoryIds } = dto;
 
       const post = manager.create(Post, dto);
-      post.files = dto.fileUrls.map((url) => {
+      // TODO: incase fileUrls not existing
+      post.files = dto.fileUrls?.map((url) => {
         const file = manager.create(FileEntity, { url });
         return manager.create(PostFile, { file });
       });

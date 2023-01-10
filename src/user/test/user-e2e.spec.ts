@@ -1,4 +1,5 @@
 import { INestApplication } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from '../../../data-source';
@@ -13,8 +14,12 @@ describe('User', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot(),
+        TypeOrmModule.forRoot({
+          ...dataSourceOptions(),
+          autoLoadEntities: true,
+        }),
         UserModule,
-        TypeOrmModule.forRoot({ ...dataSourceOptions, autoLoadEntities: true }),
       ],
     }).compile();
 

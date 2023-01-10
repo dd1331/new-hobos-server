@@ -13,10 +13,20 @@ export const userRepositoryMock = {
   findOneOrFail: jest
     .fn()
     .mockImplementation(async (dto: Partial<User>): Promise<User> => {
-      const user = new User({});
-      user.password = new Password();
-      user.id = 1;
-      user.email = 'test@test.com';
+      const user = getUser();
+      return user;
+    }),
+  findOneByOrFail: jest
+    .fn()
+    .mockImplementation(async (dto: Partial<User>): Promise<User> => {
+      const user = getUser();
       return user;
     }),
 };
+function getUser() {
+  const user = new User({});
+  user.password = new Password();
+  user.id = 1;
+  user.email = 'test@test.com';
+  return user;
+}
