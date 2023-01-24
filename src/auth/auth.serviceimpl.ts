@@ -1,6 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
+import { AuthProvider, User } from '../user/entities/user.entity';
 import { UserRepository } from '../user/user.repository';
 import { JWT } from './auth.constant';
 import { AuthService } from './auth.service';
@@ -25,7 +25,7 @@ export class AuthServiceImpl implements AuthService {
   async loginLocal(dto: LoginLocalDto): Promise<LoginResDto> {
     const { email, password } = dto;
     const user = await this.userRepo.findOneOrFail({
-      where: { email },
+      where: { email, provider: AuthProvider.NAVER },
       relations: { career: { job: true } },
     });
     await user.password.comparePassword(password);
@@ -42,7 +42,9 @@ export class AuthServiceImpl implements AuthService {
     email,
     provider,
   }: SignupSSODTO): Promise<LoginResDto> {
-    const existing = await this.userRepo.findOneBy({ ssoId });
+    const existing = await this.userRepo.findOne({
+      where: [{ ssoId }, { email }],
+    });
 
     if (existing) {
       const tokens = existing.login(this.jwtService);

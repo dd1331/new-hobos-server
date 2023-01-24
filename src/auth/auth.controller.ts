@@ -8,11 +8,17 @@ import {
   Param,
   Patch,
   Post,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Response } from 'express';
+import { AuthProvider } from '../user/entities/user.entity';
 import { AuthServiceImpl } from './auth.serviceimpl';
 import { LoginLocalDto } from './dto/login-local.dto';
-import { SignupSSODTO } from './dto/signup-sso.dto';
+import { LoginResDto } from './dto/login-res.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { SSOReqUser, User } from './user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -20,14 +26,28 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('login/local')
-  async login(@Body() dto: LoginLocalDto) {
+  async login(@Body() dto: LoginLocalDto): Promise<LoginResDto> {
     return this.authService.loginLocal(dto);
   }
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login/naver')
-  async loginNaver(@Body() dto: SignupSSODTO) {
-    return this.authService.signupSSO(dto);
+  @UseGuards(AuthGuard('naver'))
+  @Get('naver')
+  async naverCallback(
+    @User() { ssoId, email }: SSOReqUser,
+    @Res() res: Response,
+  ) {
+    const login = await this.authService.signupSSO({
+      ssoId,
+      provider: AuthProvider.NAVER,
+      email,
+    });
+    res.redirect(
+      HttpStatus.MOVED_PERMANENTLY,
+      'http://127.0.0.1:5173/naver/callback?accessToken=' +
+        login.tokens.accessToken +
+        '&refreshToken=' +
+        login.tokens.refreshToken,
+    );
   }
 
   @Get()

@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { AuthServiceImpl } from './auth.serviceimpl';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { NaverStrategy } from './strategies/naver.strategy';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     UserRepository,
     JwtService,
     JwtStrategy,
+    NaverStrategy,
   ],
   exports: [AuthServiceImpl],
 })

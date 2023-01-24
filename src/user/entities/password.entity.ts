@@ -3,7 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import { Column } from 'typeorm';
 
 export class Password {
-  @Column()
+  @Column({ nullable: true })
   private crypted: string;
 
   async setPassword(password: string) {

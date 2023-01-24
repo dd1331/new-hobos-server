@@ -5,6 +5,11 @@ export type ReqUser = {
   id: number;
 };
 
+export type SSOReqUser = {
+  email: string;
+  ssoId: string;
+};
+
 export const User = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): ReqUser => {
     const request = ctx.switchToHttp().getRequest();
